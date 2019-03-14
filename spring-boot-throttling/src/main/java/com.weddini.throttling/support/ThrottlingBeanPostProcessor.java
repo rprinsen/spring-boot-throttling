@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -109,8 +110,12 @@ public class ThrottlingBeanPostProcessor implements BeanPostProcessor {
 
             }
 
-            // call original method
-            return ReflectionUtils.invokeMethod(method, bean, args);
+            try {
+                // call original method
+                return ReflectionUtils.invokeMethod(method, bean, args);
+            } catch (UndeclaredThrowableException e) {
+                throw e.getCause();
+            }
         });
     }
 
